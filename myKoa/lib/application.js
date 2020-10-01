@@ -36,10 +36,11 @@ class Application extends EventEmitter {
   compose (ctx) {
     let index = -1
     const dispatch = (i) => {
-      if (index <= i) return Promise.reject('next() called multiples')
+      if (i <= index) return Promise.reject('next() called multiples')
       if (i === this.middlewares.length) return Promise.resolve() //终止条件
       index = i
       const middleware = this.middlewares[i]
+      i++
       try {
         return Promise.resolve(middleware(ctx, () => dispatch(i)))
       } catch (e) {
@@ -56,6 +57,8 @@ class Application extends EventEmitter {
     this.compose(ctx).then(() => {
       // this.fn(ctx)
       const { body } = ctx
+
+      console.log('application',body)
       if (typeof body === 'string' || Buffer.isBuffer(body)) {
         res.end(body)
       } else if (body instanceof Stream) {
