@@ -8,14 +8,21 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref, computed} from 'vue';
+import { defineComponent, computed, reactive, toRefs } from "vue";
+
+interface Data {
+  count: number;
+  double: number;
+  increase: () => void;
+}
 
 export default defineComponent({
-  name: 'HelloWorld',
+  name: "HelloWorld",
   props: {
     msg: String,
   },
   setup() {
+    /*
     const count = ref(0)
     const double = computed(() => {
       return count.value * 2
@@ -30,7 +37,17 @@ export default defineComponent({
       double,
       increase
     }
-  }
+    */
+    const data: Data = reactive({
+      count: 0,
+      increase: () => data.count++,
+      double: computed(() => data.count * 2),
+    });
+    const refData = toRefs(data);
+    return {
+      ...refData,
+    };
+  },
 });
 </script>
 
