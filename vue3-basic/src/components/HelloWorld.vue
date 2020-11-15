@@ -26,7 +26,7 @@ import {
   toRefs,
   onMounted,
   onUpdated,
-  watch
+  watch,
 } from "vue";
 import useMosePosition from "@/hooks/useMousePosition";
 
@@ -64,38 +64,38 @@ export default defineComponent({
     }
     */
 
-    onMounted(() => console.log('onMounted'))
-    onUpdated(() => console.log('onUpdated'))
+    onMounted(() => console.log("onMounted"));
+    onUpdated(() => console.log("onUpdated"));
 
-    const greetings = ref('')
+    const greetings = ref("");
     const updateGreetings = () => {
-      greetings.value += ' hello'
-    }
+      greetings.value += " hello";
+    };
 
     const data: Data = reactive({
       count: 0,
       increase: () => data.count++,
       double: computed(() => data.count * 2),
       numbers: [1, 2, 3, 4],
-      person: {name: '1'}
+      person: { name: "1" },
     });
-    data.person.age = 10
+    data.person.age = 10;
     setTimeout(() => {
-      data.numbers[3] = 9
-      data.person.age = 100
-    }, 2000)
+      data.numbers[3] = 9;
+      data.person.age = 100;
+    }, 2000);
     const refData = toRefs(data);
 
     watch([greetings, () => data.count], (newVal, oldVal) => {
-      console.log(oldVal)
-      console.log(newVal)
-      document.title = `update ${greetings.value} ${data.count}`
-    })
+      console.log(oldVal);
+      console.log(newVal);
+      document.title = `update ${greetings.value} ${data.count}`;
+    });
     return {
       greetings,
       updateGreetings,
       ...refData,
-      ...useMosePosition()
+      ...useMosePosition(),
     };
   },
 });

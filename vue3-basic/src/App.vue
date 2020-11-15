@@ -1,19 +1,21 @@
 <template>
   <track-mouse />
-  <img alt="Vue logo" src="./assets/logo.png"/>
-  <HelloWorld msg="Vue.js + TypeScript"/>
+  <img alt="Vue logo" src="./assets/logo.png" />
+  <HelloWorld msg="Vue.js + TypeScript" />
+  <Modal />
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import { defineComponent } from "vue";
 import HelloWorld from "./components/HelloWorld.vue";
 import TrackMouse from "@/components/TrackMouse.vue";
-
+import Modal from "@/components/Modal.vue";
 export default defineComponent({
   name: "App",
   components: {
     TrackMouse,
     HelloWorld,
+    Modal,
   },
 });
 </script>
