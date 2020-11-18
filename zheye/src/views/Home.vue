@@ -1,5 +1,5 @@
 <template>
-  <div class="home-page">
+  <div class="home-page container">
     <section class="py-5 text-center container">
       <div class="row py-lg-5">
         <div class="col-lg-6 col-md-8 mx-auto">
@@ -22,7 +22,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import ColumnList, { ColumnProps } from '@/components/ColumnList.vue'
-const testData: ColumnProps[] = [
+export const testData: ColumnProps[] = [
   {
     id: 1,
     title: 'test1的专栏',

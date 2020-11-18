@@ -10,7 +10,7 @@
           />
           <h5 class="card-title">{{ column.title }}</h5>
           <p class="card-text text-left">{{ column.description }}</p>
-          <a class="btn btn-outline-primary" href="#">进入专栏</a>
+          <span class="btn btn-outline-primary" @click="toDetail(column.id)">进入专栏</span>
         </div>
       </div>
     </div>
@@ -19,6 +19,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from 'vue'
+import { useRouter } from 'vue-router'
 
 export interface ColumnProps {
   id: number;
@@ -36,14 +37,19 @@ export default defineComponent({
     }
   },
   setup (props) {
+    const router = useRouter()
     const columnList = computed(() => {
       return props.list.map(column => {
         if (!column.avatar) column.avatar = require('@/assets/column.jpg')
         return column
       })
     })
+    const toDetail = (id: number) => {
+      router.push({ name: 'columnDetail', params: { id } })
+    }
     return {
-      columnList
+      columnList,
+      toDetail
     }
   }
 })

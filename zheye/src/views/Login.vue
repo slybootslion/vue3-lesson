@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, Ref, ref } from 'vue'
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import ValidateForm from '@/components/ValidateForm.vue'
 import ValidateInput, { RulesProp } from '@/components/ValidateInput.vue'
 
@@ -43,7 +43,7 @@ export default defineComponent({
   },
   setup () {
     const emailVal = ref('1@a.cm')
-    // const router = useRouter()
+    const router = useRouter()
     const emailRules: RulesProp = [
       { type: 'required', message: '电子邮箱地址不能为空' },
       { type: 'email', message: '请输入正确的电子邮箱格式' }
@@ -54,9 +54,10 @@ export default defineComponent({
     ]
 
     const formRef = ref<null | Ref>(null)
-    const onFormSubmit = (result) => {
+    const onFormSubmit = (result: boolean) => {
       if (result) {
         formRef.value.clearInputsVal()
+        router.push('/')
       }
     }
     return {
