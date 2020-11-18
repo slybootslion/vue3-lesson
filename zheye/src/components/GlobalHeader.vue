@@ -18,7 +18,7 @@
               :key="item.title"
               :disabled="item.disabled"
             >
-              <a href="#" class="dropdown-item">{{ item.title }}</a>
+              <router-link :to="item.link" class="dropdown-item">{{ item.title }}</router-link>
             </dropdown-item>
           </dropdown-comp>
         </li>
@@ -37,9 +37,9 @@ export interface UserProps {
   id?: number;
 }
 const dropItemData = [
-  { title: '新建文章', disabled: false },
-  { title: '编辑资料', disabled: false },
-  { title: '退出登录', disabled: false }
+  { title: '新建文章', disabled: false, link: '/create' },
+  { title: '编辑资料', disabled: false, link: '/' },
+  { title: '退出登录', disabled: false, link: '/' }
 ]
 export default defineComponent({
   name: 'GlobalHeader',

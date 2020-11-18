@@ -33,6 +33,7 @@
 <script lang="ts">
 import { defineComponent, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import ValidateForm from '@/components/ValidateForm.vue'
 import ValidateInput, { RulesProp } from '@/components/ValidateInput.vue'
 
@@ -53,11 +54,13 @@ export default defineComponent({
       { type: 'required', message: '密码不能为空' }
     ]
 
+    const store = useStore()
     const formRef = ref<null | Ref>(null)
     const onFormSubmit = (result: boolean) => {
       if (result) {
         formRef.value.clearInputsVal()
         router.push('/')
+        store.commit('login')
       }
     }
     return {
