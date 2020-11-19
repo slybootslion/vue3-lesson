@@ -5,12 +5,16 @@
         <h4>
           {{ post.title }}
         </h4>
-        <div class="row my-3 align-items-center">
+        <div class="row my-3">
           <div class="col-4" v-if="post.image">
-            <img :src="post.image" alt="" class="rounded-lg" />
+            <img
+              :src="post.image && post.image.url"
+              alt=""
+              class="rounded-lg"
+            />
           </div>
           <p :class="{ 'col-8': post.image }" class="text-muted">
-            {{ post.content }}
+            {{ post.excerpt ? post.excerpt : post.content }}
           </p>
         </div>
         <span class="text-muted">{{ post.createdAt }}</span>
@@ -21,14 +25,8 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-export interface PostProps {
-  id: number;
-  title: string;
-  content: string;
-  image?: string;
-  createdAt: string;
-  columnId: number;
-}
+import { PostProps } from '@/store'
+
 export default defineComponent({
   name: 'PostList',
   props: {

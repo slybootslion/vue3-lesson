@@ -64,7 +64,7 @@ export default defineComponent({
             _id: '12345',
             title: titleVal.value,
             content: contentVal.value,
-            columnId: columnId + '',
+            column: columnId + '',
             createdAt: new Date().toLocaleString()
           }
           store.commit('createPost', newPost)
