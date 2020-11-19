@@ -1,5 +1,27 @@
+import axios from 'axios'
 import { createStore } from 'vuex'
-import { testData, testPosts, ColumnProps, PostProps } from './testData'
+import { testPosts } from './testData'
+
+interface ImageProps{
+  _id?: string;
+  url?: string;
+  createdAt?: string;
+}
+
+export interface ColumnProps {
+  _id: string;
+  title: string;
+  avatar?: ImageProps;
+  description: string;
+}
+export interface PostProps {
+  _id: string;
+  title: string;
+  content: string;
+  image?: string;
+  createdAt: string;
+  columnId: string;
+}
 
 interface UserProps {
   isLogin: boolean;
@@ -14,11 +36,9 @@ export interface GlobalDataProps {
   posts: PostProps[];
 }
 
-export { PostProps, ColumnProps }
-
 const store = createStore<GlobalDataProps>({
   state: {
-    columns: testData,
+    columns: [],
     posts: testPosts,
     user: { isLogin: true, name: 'slybootslion', columnId: 1 }
   },
@@ -28,17 +48,25 @@ const store = createStore<GlobalDataProps>({
     },
     createPost (state, newPost) {
       state.posts.push(newPost)
+    },
+    fetchColumns (state, data) {
+      state.columns = data.data.list
+    }
+  },
+  actions: {
+    fetchColumns (ctx) {
+      axios.get('/columns').then(res => {
+        console.log(res.data)
+        ctx.commit('fetchColumns', res.data)
+      })
     }
   },
   getters: {
-    biggerColumnsLen (state) {
-      return state.columns.filter(c => c.id > 2).length
-    },
     getColumnById (state) {
-      return (id: number) => state.columns.find(c => c.id === id)
+      return (id: string) => state.columns.find(c => c._id === id)
     },
     getPostsByCid (state) {
-      return (id: number) => state.posts.filter(post => post.columnId === id)
+      return (id: string) => state.posts.filter(post => post.columnId === id)
     }
   }
 })
