@@ -1,6 +1,10 @@
 <template>
   <global-header :user="user"></global-header>
-  <loader-comp v-if="isLoading" :isLoading="isLoading" text="加载中..."></loader-comp>
+  <loader-comp
+    v-if="isLoading"
+    :isLoading="isLoading"
+    text="加载中..."
+  ></loader-comp>
   <div class="content">
     <router-view></router-view>
   </div>
@@ -18,10 +22,12 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, onMounted } from 'vue'
 import { useStore } from 'vuex'
+import axios from 'axios'
 import GlobalHeader from '@/components/GlobalHeader.vue'
 import Loader from '@/components/Loader.vue'
+import { GlobalDataProps } from './store'
 import 'bootstrap/dist/css/bootstrap.min.css'
 export default defineComponent({
   name: 'App',
@@ -30,9 +36,16 @@ export default defineComponent({
     LoaderComp: Loader
   },
   setup () {
-    const store = useStore()
+    const store = useStore<GlobalDataProps>()
     const user = computed(() => store.state.user)
     const isLoading = computed(() => store.state.loading)
+    const token = computed(() => store.state.token)
+    onMounted(() => {
+      if (!user.value.isLogin && token.value) {
+        axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
+        store.dispatch('fetchCurrentUser')
+      }
+    })
     return {
       user,
       isLoading
