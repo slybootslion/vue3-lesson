@@ -67,6 +67,8 @@ export default defineComponent({
           })
           .then((res) => {
             router.push('/')
+          }).catch(err => {
+            console.log(err)
           })
       }
     }

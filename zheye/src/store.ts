@@ -31,12 +31,18 @@ export interface UserProps {
   email?: string;
 }
 
+export interface GlobalErrorProps {
+  status: boolean;
+  message?: string;
+}
+
 export interface GlobalDataProps {
   user: UserProps;
   columns: ColumnProps[];
   posts: PostProps[];
   loading: boolean;
   token: string;
+  error: GlobalErrorProps;
 }
 
 async function getAndCommit (url: string, mutationName: string, commit: Commit) {
@@ -56,7 +62,8 @@ const store = createStore<GlobalDataProps>({
     posts: [],
     user: { isLogin: false },
     loading: false,
-    token: localStorage.getItem('token') || ''
+    token: localStorage.getItem('token') || '',
+    error: { status: false }
   },
   mutations: {
     login (state, data) {
@@ -83,6 +90,9 @@ const store = createStore<GlobalDataProps>({
     },
     setLoading (state, status) {
       state.loading = status
+    },
+    setError (state, error: GlobalErrorProps) {
+      state.error = error
     }
   },
   actions: {

@@ -5,6 +5,7 @@
     :isLoading="isLoading"
     text="加载中..."
   ></loader-comp>
+  <h1>{{error.message}}</h1>
   <div class="content">
     <router-view></router-view>
   </div>
@@ -40,6 +41,7 @@ export default defineComponent({
     const user = computed(() => store.state.user)
     const isLoading = computed(() => store.state.loading)
     const token = computed(() => store.state.token)
+    const error = computed(() => store.state.error)
     onMounted(() => {
       if (!user.value.isLogin && token.value) {
         axios.defaults.headers.common.Authorization = `Bearer ${token.value}`
@@ -48,7 +50,8 @@ export default defineComponent({
     })
     return {
       user,
-      isLoading
+      isLoading,
+      error
     }
   }
 })
