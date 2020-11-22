@@ -5,7 +5,11 @@
     :isLoading="isLoading"
     text="加载中..."
   ></loader-comp>
-  <h1>{{error.message}}</h1>
+  <message-comp
+    type="error"
+    :message="error.message"
+    v-if="error.status"
+  ></message-comp>
   <div class="content">
     <router-view></router-view>
   </div>
@@ -28,13 +32,15 @@ import { useStore } from 'vuex'
 import axios from 'axios'
 import GlobalHeader from '@/components/GlobalHeader.vue'
 import Loader from '@/components/Loader.vue'
+import Message from '@/components/Message.vue'
 import { GlobalDataProps } from './store'
 import 'bootstrap/dist/css/bootstrap.min.css'
 export default defineComponent({
   name: 'App',
   components: {
     GlobalHeader,
-    LoaderComp: Loader
+    LoaderComp: Loader,
+    MessageComp: Message
   },
   setup () {
     const store = useStore<GlobalDataProps>()
