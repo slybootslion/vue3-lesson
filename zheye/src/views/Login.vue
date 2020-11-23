@@ -34,6 +34,7 @@
 import { defineComponent, Ref, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import createMessage from '@/components/createMessage'
 import ValidateForm from '@/components/ValidateForm.vue'
 import ValidateInput, { RulesProp } from '@/components/ValidateInput.vue'
 
@@ -43,13 +44,13 @@ export default defineComponent({
     ValidateForm
   },
   setup () {
-    const emailVal = ref('111@test.com')
+    const emailVal = ref('slybootslion@vip.qq.com')
     const router = useRouter()
     const emailRules: RulesProp = [
       { type: 'required', message: '电子邮箱地址不能为空' },
       { type: 'email', message: '请输入正确的电子邮箱格式' }
     ]
-    const passwordVal = ref('111111')
+    const passwordVal = ref('123123')
     const passwordRules: RulesProp = [
       { type: 'required', message: '密码不能为空' }
     ]
@@ -65,9 +66,16 @@ export default defineComponent({
             email: emailVal.value,
             password: passwordVal.value
           })
-          .then((res) => {
-            router.push('/')
-          }).catch(console.log)
+          .then(() => {
+            const timeTag = 1000
+            createMessage(
+              `登录成功, ${timeTag / 1000}秒后跳转首页`,
+              'success',
+              timeTag
+            )
+            setTimeout(() => router.push('/'), timeTag)
+          })
+          .catch(console.log)
       }
     }
     return {

@@ -5,11 +5,6 @@
     :isLoading="isLoading"
     text="加载中..."
   ></loader-comp>
-  <message-comp
-    type="error"
-    :message="error.message"
-    v-if="error.status"
-  ></message-comp>
   <div class="content">
     <router-view></router-view>
   </div>
@@ -27,20 +22,19 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted } from 'vue'
+import { computed, defineComponent, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import axios from 'axios'
 import GlobalHeader from '@/components/GlobalHeader.vue'
 import Loader from '@/components/Loader.vue'
-import Message from '@/components/Message.vue'
+import createMessage from '@/components/createMessage'
 import { GlobalDataProps } from './store'
 import 'bootstrap/dist/css/bootstrap.min.css'
 export default defineComponent({
   name: 'App',
   components: {
     GlobalHeader,
-    LoaderComp: Loader,
-    MessageComp: Message
+    LoaderComp: Loader
   },
   setup () {
     const store = useStore<GlobalDataProps>()
@@ -48,6 +42,10 @@ export default defineComponent({
     const isLoading = computed(() => store.state.loading)
     const token = computed(() => store.state.token)
     const error = computed(() => store.state.error)
+    watch(() => error.value.status, () => {
+      const { status, message } = error.value
+      if (status && message) createMessage(message, 'error', 1500)
+    })
     onMounted(() => {
       if (!user.value.isLogin && token.value) {
         axios.defaults.headers.common.Authorization = `Bearer ${token.value}`

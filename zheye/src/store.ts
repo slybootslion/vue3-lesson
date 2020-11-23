@@ -93,6 +93,9 @@ const store = createStore<GlobalDataProps>({
     },
     setError (state, error: GlobalErrorProps) {
       state.error = error
+    },
+    logout (state) {
+      state.user = { isLogin: false }
     }
   },
   actions: {
@@ -112,7 +115,7 @@ const store = createStore<GlobalDataProps>({
       return postAndCommit('/user/login', 'login', commit, payload)
     },
     loginAndFetch ({ dispatch }, loginData) {
-      return dispatch('login', loginData).then(res => {
+      return dispatch('login', loginData).then(() => {
         return dispatch('fetchCurrentUser')
       })
     }

@@ -9,7 +9,7 @@
           >
         </li>
         <li class="list-inline-item">
-          <router-link class="btn btn-outline-light my-2" to="/login"
+          <router-link class="btn btn-outline-light my-2" to="/singup"
             >注册</router-link
           >
         </li>
@@ -22,9 +22,17 @@
               :key="item.title"
               :disabled="item.disabled"
             >
-              <router-link :to="item.link" class="dropdown-item">{{
-                item.title
-              }}</router-link>
+              <router-link
+                v-if="!item.method"
+                :to="item.link"
+                class="dropdown-item"
+              >{{ item.title }}</router-link>
+              <router-link
+                v-else
+                :to="item.link"
+                class="dropdown-item"
+                @click="logout"
+              >{{ item.title }}</router-link>
             </dropdown-item>
           </dropdown-comp>
         </li>
@@ -37,12 +45,12 @@
 import { defineComponent, PropType } from 'vue'
 import Dropdown from '@/components/Dropdown.vue'
 import DropdownItem from '@/components/DropdownItem.vue'
-import { UserProps } from '@/store'
+import store, { UserProps } from '@/store'
 
 const dropItemData = [
   { title: '新建文章', disabled: false, link: '/create' },
   { title: '编辑资料', disabled: false, link: '/' },
-  { title: '退出登录', disabled: false, link: '/' }
+  { title: '退出登录', disabled: false, link: '/', method: true }
 ]
 export default defineComponent({
   name: 'GlobalHeader',
@@ -57,8 +65,13 @@ export default defineComponent({
     }
   },
   setup () {
+    const logout = () => {
+      localStorage.clear()
+      store.commit('logout')
+    }
     return {
-      dropItemData
+      dropItemData,
+      logout
     }
   }
 })
