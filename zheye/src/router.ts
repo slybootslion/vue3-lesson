@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import axios from 'axios'
+
 import store from './store'
 
 import Login from '@/views/Login.vue'
@@ -48,8 +50,17 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, from, next) => {
-  console.log(store.state.user.isLogin)
+const getUserInfo = async (token: string) => {
+  if (token && !store.state.user.isLogin) {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`
+    return store.dispatch('fetchCurrentUser')
+  }
+}
+
+router.beforeEach(async (to, from, next) => {
+  const token = store.getters.token || localStorage.getItem('token')
+  await getUserInfo(token)
+
   if (to.meta.requiredLogin && !store.state.user.isLogin) {
     next({ name: 'login' })
     return
