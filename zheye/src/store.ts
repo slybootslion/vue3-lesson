@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Commit, createStore } from 'vuex'
 
-interface ImageProps {
+export interface ImageProps {
   _id?: string;
   url?: string;
   createdAt?: string;
@@ -43,6 +43,12 @@ export interface GlobalDataProps {
   loading: boolean;
   token: string;
   error: GlobalErrorProps;
+}
+
+export interface ResponseType<P = {}> {
+  code: number;
+  msg: string;
+  data: P;
 }
 
 async function getAndCommit (url: string, mutationName: string, commit: Commit) {

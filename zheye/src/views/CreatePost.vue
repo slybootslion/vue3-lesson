@@ -1,8 +1,13 @@
 <template>
   <div class="create-post-page container">
     <h4>新建文章</h4>
-    <input type="file" @change="handleFileChange" />
-    <uploader-comp action="/upload"></uploader-comp>
+    <!-- <input type="file" @change="handleFileChange" /> -->
+    <uploader-comp
+      action="/upload"
+      :beforeUpload="beforeUpload"
+      @file-uploaded="onFileUploaded"
+      @file-uploaded-error="onFileUploadedError"
+    ></uploader-comp>
     <validate-form @form-submit="onFormSubmit">
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
@@ -32,13 +37,14 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue'
-import { GlobalDataProps, PostProps } from '@/store'
+import { GlobalDataProps, PostProps, ResponseType, ImageProps } from '@/store'
 import ValidateForm from '@/components/ValidateForm.vue'
 import ValidateInput, { RulesProp } from '@/components/ValidateInput.vue'
 import Uploader from '@/components/Uploader.vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import createMessage from '@/components/createMessage'
+// import axios from 'axios'
 
 export default defineComponent({
   components: {
@@ -81,19 +87,36 @@ export default defineComponent({
       }
     }
 
-    const handleFileChange = (e: Event) => {
-      const target = e.target as HTMLInputElement
-      const file = target.files && target.files[0]
-      if (file) {
-        const formData = new FormData()
-        formData.append(file.name, file)
-        axios.post('/upload', formData, {
-          headers: {
-            'Content-Type': 'mutipart/form-data'
-          }
-        }).then(console.log)
+    const beforeUpload = (file: File): boolean => {
+      const res = ['image/jpeg', 'image/jpg'].includes(file.type)
+      if (!res) {
+        createMessage('上传图片只能是JPG格式！', 'error', 1500)
       }
+      return res
     }
+
+    const onFileUploaded = (data: ResponseType<ImageProps>) => {
+      createMessage(`上传图片id：${data.data._id}`, 'success', 1000)
+    }
+
+    const onFileUploadedError = (error: object) => {
+      console.log(error)
+      createMessage(`图片上传失败：${error.toString}`, 'error', 1000)
+    }
+
+    // const handleFileChange = (e: Event) => {
+    //   const target = e.target as HTMLInputElement
+    //   const file = target.files && target.files[0]
+    //   if (file) {
+    //     const formData = new FormData()
+    //     formData.append(file.name, file)
+    //     axios.post('/upload', formData, {
+    //       headers: {
+    //         'Content-Type': 'mutipart/form-data'
+    //       }
+    //     }).then(console.log)
+    //   }
+    // }
 
     return {
       titleVal,
@@ -101,7 +124,10 @@ export default defineComponent({
       titleRules,
       contentRules,
       onFormSubmit,
-      handleFileChange
+      // handleFileChange,
+      beforeUpload,
+      onFileUploaded,
+      onFileUploadedError
     }
   }
 })

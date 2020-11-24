@@ -6,22 +6,32 @@
       <span v-else-if="fileStatus === 'error'">上传失败</span>
       <span v-else>点击上传</span>
     </button>
-    <input type="file" class="file-input d-none" ref="fileInput" @change="handleFileChange">
+    <input
+      type="file"
+      class="file-input d-none"
+      ref="fileInput"
+      @change="handleFileChange"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, PropType, ref } from 'vue'
 import axios from 'axios'
-type UploadStatus = 'ready' | 'loading' | 'success' | 'error'
+type UploadStatus = 'ready' | 'loading' | 'success' | 'error';
+type CheckFn = (file: File) => boolean;
 export default defineComponent({
   props: {
     action: {
       type: String,
       required: true
+    },
+    beforeUpload: {
+      type: Function as PropType<CheckFn>
     }
   },
-  setup (props) {
+  emits: ['file-uploaded', 'file-uploaded-error'],
+  setup (props, ctx) {
     const fileInput = ref<null | HTMLInputElement>(null)
     const fileStatus = ref<UploadStatus>('ready')
     const triggerUpload = () => {
@@ -30,16 +40,31 @@ export default defineComponent({
     const handleFileChange = (e: Event) => {
       const target = e.target as HTMLInputElement
       if (target.files) {
-        fileStatus.value = 'loading'
         const files = Array.from(target.files)
+        const file = files[0]
+
+        if (props.beforeUpload) {
+          const result = props.beforeUpload(file)
+          if (!result) return
+        }
+
+        fileStatus.value = 'loading'
         const formData = new FormData()
-        formData.append('file', files[0])
-        axios.post(props.action, formData, {
-          headers: {
-            'Content-Type': 'mutipart/form-data'
-          }
-        }).then(() => (fileStatus.value = 'success'))
-          .catch(() => (fileStatus.value = 'error'))
+        formData.append('file', file)
+        axios
+          .post(props.action, formData, {
+            headers: {
+              'Content-Type': 'mutipart/form-data'
+            }
+          })
+          .then(res => {
+            ctx.emit('file-uploaded', res.data)
+            fileStatus.value = 'success'
+          })
+          .catch(error => {
+            ctx.emit('file-uploaded-error', { error })
+            fileStatus.value = 'error'
+          })
           .finally(() => {
             if (fileInput.value) fileInput.value.value = ''
           })
@@ -56,5 +81,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 </style>
