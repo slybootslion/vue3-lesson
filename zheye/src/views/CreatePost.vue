@@ -2,6 +2,7 @@
   <div class="create-post-page container">
     <h4>新建文章</h4>
     <input type="file" @change="handleFileChange" />
+    <uploader-comp action="/upload"></uploader-comp>
     <validate-form @form-submit="onFormSubmit">
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
@@ -34,6 +35,7 @@ import { defineComponent, onMounted, ref } from 'vue'
 import { GlobalDataProps, PostProps } from '@/store'
 import ValidateForm from '@/components/ValidateForm.vue'
 import ValidateInput, { RulesProp } from '@/components/ValidateInput.vue'
+import Uploader from '@/components/Uploader.vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
@@ -41,7 +43,8 @@ import axios from 'axios'
 export default defineComponent({
   components: {
     ValidateForm,
-    ValidateInput
+    ValidateInput,
+    UploaderComp: Uploader
   },
   setup () {
     const titleVal = ref('')
