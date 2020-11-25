@@ -7,7 +7,17 @@
       :beforeUpload="beforeUpload"
       @file-uploaded="onFileUploaded"
       @file-uploaded-error="onFileUploadedError"
-    ></uploader-comp>
+    >
+      <h1>点击上传</h1>
+      <template #loading>
+        <div class="spinner-border" role="status">
+          <span class="sr-only" style="display: none">Loading...</span>
+        </div>
+      </template>
+      <template #uploaded="dataProps">
+        <img :src="dataProps.uploadedData.data.url" width="500" alt="">
+      </template>
+    </uploader-comp>
     <validate-form @form-submit="onFormSubmit">
       <div class="mb-3">
         <label class="form-label">文章标题：</label>
