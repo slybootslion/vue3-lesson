@@ -8,7 +8,7 @@
         <button class="btn btn-primary">上传成功</button>
       </slot>
       <slot v-else-if="fileStatus === 'error'">上传失败</slot>
-      <div v-else @click="triggerUpload">
+      <div v-else class="file-upload-container" @click="triggerUpload" v-bind="$attrs">
         <slot name="default">
           <button class="btn btn-primary">点击上传</button>
         </slot>
@@ -38,6 +38,7 @@ export default defineComponent({
       type: Function as PropType<CheckFn>
     }
   },
+  inheritAttrs: false,
   emits: ['file-uploaded', 'file-uploaded-error'],
   setup (props, ctx) {
     const fileInput = ref<null | HTMLInputElement>(null)

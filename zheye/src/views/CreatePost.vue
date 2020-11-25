@@ -4,18 +4,22 @@
     <!-- <input type="file" @change="handleFileChange" /> -->
     <uploader-comp
       action="/upload"
-      :beforeUpload="beforeUpload"
-      @file-uploaded="onFileUploaded"
+      class="d-flex align-items-center justify-content-center bg-light text-secondary w-100 my-4"
+      :beforeUpload="uploadCheck"
+      @file-uploaded="handleFileUploaded"
       @file-uploaded-error="onFileUploadedError"
     >
-      <h1>点击上传</h1>
+      <h2>点击上传头图</h2>
       <template #loading>
-        <div class="spinner-border" role="status">
-          <span class="sr-only" style="display: none">Loading...</span>
+        <div class="d-flex">
+          <div class="spinner-border text-secondary" role="status">
+            <span class="sr-only" style="display: none">Loading...</span>
+          </div>
+          <h2>正在上传</h2>
         </div>
       </template>
       <template #uploaded="dataProps">
-        <img :src="dataProps.uploadedData.data.url" width="500" alt="">
+        <img :src="dataProps.uploadedData.data.url" alt="" />
       </template>
     </uploader-comp>
     <validate-form @form-submit="onFormSubmit">
@@ -54,6 +58,7 @@ import Uploader from '@/components/Uploader.vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import createMessage from '@/components/createMessage'
+import { beforeUploadCheck } from '../helper'
 // import axios from 'axios'
 
 export default defineComponent({
@@ -65,7 +70,8 @@ export default defineComponent({
   setup () {
     const titleVal = ref('')
     const contentVal = ref('')
-
+    const store = useStore<GlobalDataProps>()
+    let imgId = ''
     const titleRules: RulesProp = [
       { type: 'required', message: '文章标题不能为空' }
     ]
@@ -73,8 +79,6 @@ export default defineComponent({
     const contentRules: RulesProp = [
       { type: 'required', message: '文章详情不能为空' }
     ]
-
-    const store = useStore<GlobalDataProps>()
 
     onMounted(() => {
       store.dispatch('fetchColumns')
@@ -84,34 +88,56 @@ export default defineComponent({
 
     const onFormSubmit = (result: boolean) => {
       if (result) {
-        const { column } = store.state.user
+        const { column, _id } = store.state.user
         if (column) {
           const newPost: PostProps = {
             title: titleVal.value,
             content: contentVal.value,
-            column
+            column,
+            author: _id
           }
-          store.commit('createPost', newPost)
-          router.push({ name: 'columnDetail', params: { id: column } })
+          console.log(column)
+          if (imgId) newPost.image = imgId
+          store.dispatch('createPost', newPost).then(() => {
+            createMessage('发表成功，2秒后跳转到文章', 'success', 2000)
+            setTimeout(() => {
+              router.push({ name: 'columnDetail', params: { id: column } })
+            }, 2000)
+          })
         }
       }
     }
-
-    const beforeUpload = (file: File): boolean => {
+    // http://192.168.1.102:10001/column-detail/5fbb2cecb558154f0392b304
+    /*     const beforeUpload = (file: File): boolean => {
       const res = ['image/jpeg', 'image/jpg'].includes(file.type)
       if (!res) {
         createMessage('上传图片只能是JPG格式！', 'error', 1500)
       }
       return res
-    }
+    } */
 
-    const onFileUploaded = (data: ResponseType<ImageProps>) => {
-      createMessage(`上传图片id：${data.data._id}`, 'success', 1000)
+    const handleFileUploaded = (data: ResponseType<ImageProps>) => {
+      // createMessage(`上传图片id：${data.data._id}`, 'success', 1000)
+      if (data.data._id) imgId = data.data._id
     }
 
     const onFileUploadedError = (error: object) => {
       console.log(error)
       createMessage(`图片上传失败：${error.toString}`, 'error', 1000)
+    }
+
+    const uploadCheck = (file: File) => {
+      const result = beforeUploadCheck(file, { size: 1, format: ['image/jpeg', 'image/png'] })
+      const { passed, error } = result
+      if (error === 'format') {
+        createMessage('上传图片只能是JPG/PNG格式！', 'error', 1500)
+        return
+      }
+      if (error === 'size') {
+        createMessage('图片上传大小不能超过1mb', 'error', 1500)
+        return
+      }
+      return passed
     }
 
     // const handleFileChange = (e: Event) => {
@@ -135,13 +161,23 @@ export default defineComponent({
       contentRules,
       onFormSubmit,
       // handleFileChange,
-      beforeUpload,
-      onFileUploaded,
-      onFileUploadedError
+      // beforeUpload,
+      handleFileUploaded,
+      onFileUploadedError,
+      uploadCheck
     }
   }
 })
 </script>
 
-<style scoped>
+<style>
+.create-post-page .file-upload-container {
+  height: 200px;
+  cursor: pointer;
+}
+.create-post-page .file-upload-container img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 </style>

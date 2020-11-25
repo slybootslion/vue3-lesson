@@ -18,13 +18,14 @@ export interface PostProps {
   title: string;
   excerpt?: string;
   content?: string;
-  image?: ImageProps;
+  image?: ImageProps | string;
   createdAt?: string;
   column: string;
+  author?: string;
 }
 
 export interface UserProps {
-  _id?: number;
+  _id?: string;
   isLogin: boolean;
   nickName?: string;
   column?: string;
@@ -103,6 +104,7 @@ const store = createStore<GlobalDataProps>({
     },
     logout (state) {
       state.user = { isLogin: false }
+      delete axios.defaults.headers.common.Authorization
     }
   },
   actions: {
@@ -116,10 +118,13 @@ const store = createStore<GlobalDataProps>({
       getAndCommit(`/columns/${cid}/posts`, 'fetchPosts', commit)
     },
     async fetchCurrentUser ({ commit }) {
-      return await getAndCommit('/user/current', 'fetchCurrentUser', commit)
+      return getAndCommit('/user/current', 'fetchCurrentUser', commit)
     },
     login ({ commit }, payload) {
       return postAndCommit('/user/login', 'login', commit, payload)
+    },
+    createPost ({ commit }, payload) {
+      return postAndCommit('/posts', 'createPost', commit, payload)
     },
     loginAndFetch ({ dispatch }, loginData) {
       return dispatch('login', loginData).then(() => {

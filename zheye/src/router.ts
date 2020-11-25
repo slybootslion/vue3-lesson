@@ -59,13 +59,51 @@ const getUserInfo = async (token: string) => {
 
 router.beforeEach(async (to, from, next) => {
   const token = store.getters.token || localStorage.getItem('token')
-  await getUserInfo(token)
+  const user = store.state.user
+  const { requiredLogin, redirectAlreadyLogin } = to.meta
 
-  if (to.meta.requiredLogin && !store.state.user.isLogin) {
+  /*   if (!user.isLogin) {
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`
+      store.dispatch('fetchCurrentUser').then(() => {
+        if (redirectAlreadyLogin) {
+          next({ name: 'home' })
+        } else {
+          next()
+        }
+      }).catch(e => {
+        console.error(e)
+        localStorage.removeItem('token')
+        next({ name: 'login' })
+      })
+    } else {
+      if (requiredLogin) {
+        next({ name: 'login' })
+      } else {
+        next()
+      }
+    }
+  } else {
+    if (redirectAlreadyLogin) {
+      next({ name: 'home' })
+    } else {
+      next()
+    }
+  }
+  next() */
+  /* ------------------------- */
+  if (token && !user.isLogin) {
+    try {
+      await getUserInfo(token)
+    } catch (error) {
+      localStorage.removeItem('token')
+    }
+  }
+  if (requiredLogin && !store.state.user.isLogin) {
     next({ name: 'login' })
     return
   }
-  if (to.meta.redirectAlreadyLogin && store.state.user.isLogin) {
+  if (redirectAlreadyLogin && store.state.user.isLogin) {
     next({ name: 'home' })
     return
   }
